@@ -1,0 +1,327 @@
+:root {
+    --primary: #1b4332;
+    --primary-dark: #081c15;
+    --accent: #e76f51;
+    --bg-light: #f8f9fa;
+    --text-main: #2d3748;
+    --border-color: #e2e8f0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-light);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* HEADER & MENÚ */
+header {
+    background: var(--primary);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 1.3rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+
+nav a:hover {
+    color: var(--accent);
+}
+
+.cart-btn {
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cart-btn:hover {
+    background: #d65f3f;
+}
+
+/* VISTA PRINCIPAL (HERO) */
+.hero {
+    background: linear-gradient(rgba(27, 67, 50, 0.7), rgba(27, 67, 50, 0.7)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80') center/cover;
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* CONTENEDOR PRINCIPAL & LAYOUT GRID */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 2rem;
+    flex: 1;
+}
+
+@media (max-width: 900px) {
+    .main-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+/* CATÁLOGO / CARDS */
+.grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.4rem;
+    color: var(--primary-dark);
+}
+
+.card-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.card-footer-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.precio {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.btn-add {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn-add:hover {
+    background: var(--primary-dark);
+}
+
+/* CARRITO LATERAL */
+.carrito-box {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    height: fit-content;
+    position: sticky;
+    top: 90px;
+}
+
+.lista-carrito {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.item-carrito {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.6rem;
+    font-size: 0.9rem;
+}
+
+.item-carrito-info {
+    flex-grow: 1;
+    margin-right: 0.5rem;
+}
+
+.item-carrito-acciones {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-eliminar {
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrito-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 1rem 0;
+    padding-top: 0.5rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.btn-comprar {
+    background: var(--accent);
+    color: white;
+    width: 100%;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-comprar:hover {
+    background: #d65f3f;
+}
+
+/* MODAL DE RECIBO / BOLETA */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 450px;
+    max-width: 90%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+/* FOOTER */
+footer {
+    background: var(--primary-dark);
+    color: #cbd5e1;
+    text-align: center;
+    padding: 2rem;
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+footer p {
+    margin: 0.3rem 0;
+}

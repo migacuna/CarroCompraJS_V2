@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expediciones Vértigo | Turismo Aventura</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+    <!-- MENÚ / HEADER -->
+    <header>
+        <div class="logo">⛰ Expediciones Vértigo</div>
+        <nav>
+            <ul>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Aventuras</a></li>
+                <li><a href="#">Nosotros</a></li>
+                <li><a href="#">Contacto</a></li>
+                <li>
+                    <button class="cart-btn" onclick="document.querySelector('.carrito-box').scrollIntoView({behavior: 'smooth'})">
+                        🛒 Carro (<span id="contador-carro">0</span>)
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- VISTA PRINCIPAL (HERO) -->
+    <section class="hero">
+        <h1>Vive la Naturaleza al Límite</h1>
+        <p>Selecciona tus próximas experiencias de aventura y asegura tu cupo de forma rápida y segura.</p>
+    </section>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-container">
+        <!-- Catálogo de Productos / Cards -->
+        <div>
+            <h2 class="section-title">Nuestras Aventuras</h2>
+            <div class="grid-productos" id="catalogo-grid">
+                <!-- Se inyecta dinámicamente desde JS -->
+            </div>
+        </div>
+
+        <!-- Carrito de Compras Lateral -->
+        <div class="carrito-box">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-dark);">Resumen de Carro</h3>
+            <div class="lista-carrito" id="lista-carrito">
+                <p style="color: #94a3b8; font-size: 0.9rem; text-align: center; padding: 1rem 0;">Tu carro está vacío</p>
+            </div>
+            <div class="carrito-total">
+                <span>Total:</span>
+                <span id="total-carro">$0</span>
+            </div>
+            <button class="btn-comprar" onclick="procesarCompra()">Pagar y Obtener Boleta</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE BOLETA / RECIBO -->
+    <div class="modal" id="modalBoleta">
+        <div class="modal-content" id="contenido-boleta"></div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p><strong>Expediciones Vértigo SpA</strong> - Todos los derechos reservados © 2026</p>
+        <p>Plataforma conectada de forma segura con Django REST Backend</p>
+    </footer>
+
+    <script src="assets/js/scripts.js"></script>
+</body>
+</html>
