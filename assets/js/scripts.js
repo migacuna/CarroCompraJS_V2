@@ -1,29 +1,85 @@
 // =========================================================================
 // LISTA DE PRODUCTOS / DATOS (Administrables localmente o mapeados desde Django)
 // =========================================================================
-const productosDisponibles = [
-    {
-        id: 1,
-        titulo: "Rafting Río Maipo",
-        precio: 45000,
-        detalle: "Adrenalina pura nivel avanzado en rápidos de clase IV con equipo completo incluido.",
-        imagen_url: "https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?auto=format&fit=crop&w=500&q=80"
-    },
-    {
-        id: 2,
-        titulo: "Trekking Glaciar",
-        precio: 35000,
-        detalle: "Caminata panorámica de montaña con vistas increíbles y guía certificado de alta montaña.",
-        imagen_url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=80"
-    },
-    {
-        id: 3,
-        titulo: "Escalada en Roca",
-        precio: 28000,
-        detalle: "Aprende técnicas básicas, aseguramiento y práctica de rápel en murallas naturales.",
-        imagen_url: "https://images.unsplash.com/photo-1522163182402-834f877fd9a1?auto=format&fit=crop&w=500&q=80"
+
+let productosDisponibles = [];
+
+//cargas los "Productos" desde la BD
+async function cargarProductosDesdeBackend() {
+    try {
+        console.log("Intentando conectar con Django...");
+        const response = await fetch('http://127.0.0.1:8000/api/aventuras/');
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        productosDisponibles = await response.json();
+        console.log("Datos recibidos de Django:", productosDisponibles);
+        
+        renderProducts();
+    } catch (error) {
+        console.error("Fallo al conectar con la API:", error);
     }
-];
+}
+
+function renderProducts() {
+    const grid = document.getElementById('catalogo-grid');
+    if (!grid) {
+        console.error("No se encontró el elemento #catalogo-grid en el HTML.");
+        return;
+    }
+    
+    // Limpiar el contenedor usando JavaScript puro
+    grid.innerHTML = '';
+    
+    productosDisponibles.forEach(adv => {
+        let dificultad = adv.dificultad || 'Intermedio'; 
+        let badgeClass = dificultad === 'Avanzado' ? 'bg-danger' : dificultad === 'Intermedio' ? 'bg-warning text-dark' : 'bg-success';
+        let imagen = adv.imagen_url || adv.img || '';
+        let ubicacion = adv.ubicacion || 'Chile';
+
+        // Crear la tarjeta como un elemento del DOM
+        const col = document.createElement('div');
+        col.className = "col-md-6 col-lg-3 mb-4";
+        
+        col.innerHTML = `
+            <div class="card card-adventure h-100 shadow-sm">
+                <div class="card-img-container">
+                    <img src="${imagen}" alt="${adv.titulo}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                    <span class="badge ${badgeClass} badge-difficulty">${dificultad}</span>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="card-title fw-bold">${adv.titulo}</h5>
+                        <p class="text-muted small mb-2"><i class="fa-solid fa-location-dot me-1 text-danger"></i>${ubicacion}</p>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                        <span class="price-tag fw-bold">$${Number(adv.precio).toLocaleString('es-CL')}</span>
+                        <button type="buton" class="btn btn-custom-primary btn-sm add-to-cart">
+                            <i class="fa-solid fa-cart-plus me-1"></i>Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Asignar el evento de clic al botón de manera segura
+        col.querySelector('button').addEventListener('click', () => {
+            agregarAlCarro(adv.id);
+        });
+
+        grid.appendChild(col);
+    });
+}
+
+// Inicializar de forma nativa al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    cargarProductosDesdeBackend();
+});
+
+// Ejecutar al cargar la ventana
+window.addEventListener('DOMContentLoaded', cargarProductosDesdeBackend);
 
 let carrito = [];
 const API_URL = "http://127.0.0.1:8000/api"; // Endpoint base de tu backend Django
@@ -48,6 +104,7 @@ function cargarCatalogo() {
             `).join('');
 }
 
+//agregamos elementos al carro
 function agregarAlCarro(id) {
     const prod = productosDisponibles.find(p => p.id === id);
     const item = carrito.find(i => i.id === id);
@@ -59,6 +116,7 @@ function agregarAlCarro(id) {
     actualizarCarroUI();
 }
 
+//actualiza el carro (agrega o elimina u elemento de este)
 function actualizarCarroUI() {
     const contenedor = document.getElementById('lista-carrito');
     const contador = document.getElementById('contador-carro');
@@ -92,27 +150,33 @@ function actualizarCarroUI() {
     totalEl.innerText = `$${total.toLocaleString()}`;
 }
 
+//Elimina elemnetos del carro
 function removerItem(index) {
     carrito.splice(index, 1);
     actualizarCarroUI();
 }
 
 // Enviar solicitud POST vía fetch nativo al endpoint de Django
-async function procesarCompra() {
+async function procesarCompra(event) {
+    if (event) {
+        event.preventDefault();
+    }
+    
     if (carrito.length === 0) {
         alert("Por favor agrega al menos una aventura a tu carro antes de pagar.");
         return;
     }
 
-    const montoTotal = carrito.reduce((sum, i) => sum + (i.precio * i.cantidad), 0);
+    const montoTotal = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
     const payload = {
         cliente_nombre: "Cliente Web Vértigo",
         cliente_email: "cliente@vertigo.cl",
         monto_total: montoTotal,
-        items: carrito.map(i => ({
-            aventura: i.id,
-            cantidad: i.cantidad,
-            precio_unitario: i.precio
+        items: carrito.map(item => ({
+            aventura: item.id,
+            cantidad: item.cantidad,
+            precio_unitario: item.precio
         }))
     };
 
@@ -123,14 +187,32 @@ async function procesarCompra() {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error("Error en la respuesta del servidor");
+        // Leemos la respuesta una sola vez como texto plano primero
+        const responseText = await response.text();
+        
+        let data;
+        try {
+            data = JSON.parse(responseText); // Intentamos convertirla a JSON si es posible
+        } catch (e) {
+            data = { detalle: responseText };
+        }
 
-        const recibo = await response.json();
-        mostrarBoletaModal(recibo);
+        if (!response.ok) {
+            //const errorData = await response.json();
+            //const errorText = await response.text();
+            console.error("detalle del error del backend", data)
+            //throw new Error("Error en la respuesta del servidor (${response.status}): ${errorText}");
+            throw new Error(`Error ${response.status}: ${JSON.stringify(data)}`);
+        } 
+
+        //const recibo = await response.json();
+        mostrarBoletaModal(data);
+        console.log("Compra exitosa", data)
 
         carrito = [];
         actualizarCarroUI();
     } catch (error) {
+        console.error("fallo capturado", error)
         alert("No se pudo conectar con el backend de Django: " + error.message);
     }
 }
@@ -138,15 +220,15 @@ async function procesarCompra() {
 function mostrarBoletaModal(r) {
     const contenido = document.getElementById('contenido-boleta');
     contenido.innerHTML = `
-                <h3>🧾 Comprobante Electrónico</h3>
-                <p><strong>Código de Canje:</strong> <span style="color:var(--accent); font-size:1.1rem;">${r.codigo_canje}</span></p>
-                <p style="margin-top:0.5rem;"><strong>Titular:</strong> ${r.orden.cliente_nombre}</p>
-                <p><strong>Monto Total:</strong> $${Number(r.orden.monto_total).toLocaleString()}</p>
-                <hr style="margin: 1rem 0; border:0; border-top:1px solid var(--border-color);">
-                <h4 style="margin-bottom:0.4rem; font-size:0.95rem;">Instrucciones:</h4>
-                <p style="white-space: pre-line; background:var(--bg-light); padding:10px; border-radius:4px; font-size:0.85rem; color:#475569;">${r.instrucciones}</p>
-                <button class="btn-comprar" style="margin-top: 1.5rem;" onclick="document.getElementById('modalBoleta').style.display='none'">Entendido / Cerrar</button>
-            `;
+        <h3>🧾 Comprobante Electrónico</h3>
+        <p><strong>Código de Canje:</strong> <span style="color:var(--accent); font-size:1.1rem;">${r.codigo_canje}</span></p>
+        <p style="margin-top:0.5rem;"><strong>Titular:</strong> ${r.cliente || 'Cliente'}</p>
+        <p><strong>Monto Total:</strong> $${Number(r.total_pagado || 0).toLocaleString('es-CL')}</p>
+        <hr style="margin: 1rem 0; border:0; border-top:1px solid var(--border-color);">
+        <h4 style="margin-bottom:0.4rem; font-size:0.95rem;">Instrucciones:</h4>
+        <p style="white-space: pre-line; background:var(--bg-light); padding:10px; border-radius:4px; font-size:0.85rem; color:#475569;">${r.instrucciones}</p>
+        <button class="btn-comprar" style="margin-top: 1.5rem;" onclick="document.getElementById('modalBoleta').style.display='none'">Entendido / Cerrar</button>
+    `;
     document.getElementById('modalBoleta').style.display = 'flex';
 }
 
